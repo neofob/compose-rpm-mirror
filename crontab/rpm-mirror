@@ -1,0 +1,4 @@
+# Regular cron jobs for the rpm-mirror package
+# Run every 6 hours
+
+0 */6 * * *   su rpm-mirror -c /usr/local/bin/rsync-repo.sh

@@ -1,0 +1,13 @@
+*/aarch64/*
+aarch64/*
+*/debug/*
+*/Devel*
+*/devel*
+*/ppc64le/*
+ppc64le/*
+*/s390x/*
+s390x*
+*/source/*
+source/*
+i686*
+Everything

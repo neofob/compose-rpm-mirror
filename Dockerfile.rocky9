@@ -1,0 +1,35 @@
+FROM rockylinux/rockylinux:9.5
+
+# Set environment variables
+ENV PKGS="rsync yum-utils cronie iputils wget gettext" \
+    REPO_BASE_DIR=/opt/www/rpm-mirror \
+    REPO_VERSION=9 \
+    TINI_URL=https://github.com/krallin/tini/releases/download/v0.19.0/tini_0.19.0-amd64.rpm \
+    MIRROR_UID=1000 \
+    MIRROR_GID=1000
+
+# Install necessary packages and tools, create user and group, set timezone
+RUN dnf install -y ${PKGS} && \
+    wget -O /tmp/tini.rpm ${TINI_URL} && dnf install -y /tmp/tini.rpm && rm -f /tmp/tini.rpm && \
+    groupadd --gid "${MIRROR_GID}" rpm-mirror && \
+    adduser --system --uid "${MIRROR_UID}" --gid "${MIRROR_GID}" rpm-mirror && \
+    ln -fs /usr/share/zoneinfo/UTC /etc/localtime
+
+# Create necessary directories and set permissions
+RUN mkdir -p "${REPO_BASE_DIR}"/pub/rocky/"${REPO_VERSION}" /opt/scripts /var/log/rpm-mirror && \
+    chown -R rpm-mirror:rpm-mirror "${REPO_BASE_DIR}" /var/log/rpm-mirror
+
+# Copy necessary files to the container
+COPY rsync-repo.sh /usr/local/bin/rsync-repo.sh
+RUN chmod +x /usr/local/bin/rsync-repo.sh
+
+COPY excludes.txt /opt/www/rpm-mirror/excludes.txt
+
+# Configure cron job for rpm-mirror user
+RUN echo '0 */6 * * *   su rpm-mirror -c "/usr/local/bin/rsync-repo.sh"' > /etc/cron.d/rpm-mirror && \
+    chmod 0644 /etc/cron.d/rpm-mirror
+
+WORKDIR /opt/www/rpm-mirror
+
+# Start cron service in the foreground
+ENTRYPOINT ["/usr/bin/tini", "-v", "--", "/usr/sbin/crond", "-f"]

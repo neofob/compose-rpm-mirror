@@ -1,0 +1,30 @@
+---
+services:
+  mirror:
+    container_name: mirror
+    hostname: mirror
+    image: neofob/rpm-mirror:rocky-${REPO_VERSION}
+    build:
+      context: .
+      dockerfile: Dockerfile.rocky${REPO_VERSION}
+    restart: always
+    volumes:
+      - "${REPO_BASE_DIR}:/opt/www/rpm-mirror"
+      - "${CRONTAB_DIR}:/etc/cron.d:ro"
+    tmpfs:
+      - "/var/run"
+      - "/var/log"
+  server:
+    container_name: server
+    hostname: server
+    image: neofob/rpm-server:rocky-${REPO_VERSION}
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    restart: always
+    command: [nginx-debug, '-g', 'daemon off;']
+    volumes:
+      - "${REPO_BASE_DIR}:/mirror:ro"
+      - "${NGINX_CONF}:/etc/nginx/conf.d/mirror.conf:ro"
+    ports:
+      - "80:80"
