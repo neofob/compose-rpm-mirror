@@ -1,4 +1,4 @@
-FROM rockylinux/rockylinux:9.5
+FROM rockylinux/rockylinux:9.6-minimal
 
 # Set environment variables
 ENV PKGS="rsync yum-utils cronie iputils wget gettext" \
@@ -23,12 +23,13 @@ RUN mkdir -p "${REPO_BASE_DIR}"/pub/rocky/"${REPO_VERSION}" /opt/scripts /var/lo
 COPY rsync-repo.sh /usr/local/bin/rsync-repo.sh
 RUN chmod +x /usr/local/bin/rsync-repo.sh
 
-COPY excludes.txt /opt/www/rpm-mirror/excludes.txt
+COPY excludes.txt /etc/excludes.txt
 
 # Configure cron job for rpm-mirror user
 RUN echo '0 */6 * * *   su rpm-mirror -c "/usr/local/bin/rsync-repo.sh"' > /etc/cron.d/rpm-mirror && \
     chmod 0644 /etc/cron.d/rpm-mirror
 
+ENV REPO_EXCLUDES_LIST=/etc/excludes.txt
 WORKDIR /opt/www/rpm-mirror
 
 # Start cron service in the foreground
