@@ -1,4 +1,4 @@
-FROM rockylinux/rockylinux:9.6-minimal
+FROM rockylinux/rockylinux:9.6
 
 # Set environment variables
 ENV PKGS="rsync yum-utils cronie iputils wget gettext" \
@@ -33,4 +33,4 @@ ENV REPO_EXCLUDES_LIST=/etc/excludes.txt
 WORKDIR /opt/www/rpm-mirror
 
 # Start cron service in the foreground
-ENTRYPOINT ["/usr/bin/tini", "-v", "--", "/usr/sbin/crond", "-f"]
+ENTRYPOINT ["/usr/bin/tini", "-v", "--", "/usr/sbin/crond", "-n"]
