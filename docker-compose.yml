@@ -1,8 +1,8 @@
 ---
 services:
   rpm-mirror:
-    container_name: mirror
-    hostname: mirror
+    container_name: rpm-mirror
+    hostname: rpm-mirror
     image: neofob/rpm-mirror:rocky-${REPO_VERSION}
     build:
       context: .
@@ -16,8 +16,8 @@ services:
       - "/var/run"
       - "/var/log"
   rpm-server:
-    container_name: server
-    hostname: server
+    container_name: rpm-mirror-server
+    hostname: rpm-mirror-server
     image: neofob/rpm-server:rocky-${REPO_VERSION}
     build:
       context: .
