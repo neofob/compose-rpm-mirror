@@ -10,7 +10,8 @@ services:
     restart: always
     volumes:
       - "${REPO_BASE_DIR}:/opt/www/rpm-mirror"
-      - "${CRONTAB_DIR}:/etc/cron.d:ro"
+# cron.d/rpm-mirror needs be owned by root:root
+#      - "${CRONTAB_DIR}:/etc/cron.d:ro"
     tmpfs:
       - "/var/run"
       - "/var/log"
