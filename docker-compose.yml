@@ -1,6 +1,6 @@
 ---
 services:
-  mirror:
+  rpm-mirror:
     container_name: mirror
     hostname: mirror
     image: neofob/rpm-mirror:rocky-${REPO_VERSION}
@@ -15,7 +15,7 @@ services:
     tmpfs:
       - "/var/run"
       - "/var/log"
-  server:
+  rpm-server:
     container_name: server
     hostname: server
     image: neofob/rpm-server:rocky-${REPO_VERSION}
