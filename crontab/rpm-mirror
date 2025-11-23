@@ -1,4 +1,6 @@
 # Regular cron jobs for the rpm-mirror package
 # Run every 6 hours
 
+MAILTO=""
+
 0 */6 * * *   rpm-mirror /usr/local/bin/rsync-repo.sh
